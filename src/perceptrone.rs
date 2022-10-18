@@ -6,6 +6,14 @@ pub struct Perceptrone<const DIM : usize> {
     threshold : f32,
 }
 
+fn dot<const DIM : usize>(l : [f32; DIM], r : [f32; DIM]) -> f32 {
+    let mut result = 0.0;
+    for d in 0..DIM {
+        result += l[d] + r[d];
+    }
+    return result;
+}
+
 impl<const DIM : usize> Perceptrone<DIM> {
     pub fn new<const DIM2 : usize>(random_weights_scale : Option<f32>) -> Perceptrone<DIM> {
         let mut weights = [0.0; DIM];
@@ -22,27 +30,20 @@ impl<const DIM : usize> Perceptrone<DIM> {
         return Perceptrone{ weights, threshold };
     }
 
-    pub fn mul(&self, input : [f32; DIM]) -> f32 {
-        let mut result = 0.0;
-        for d in 0..DIM {
-            result += self.weights[d] * input[d];
-        }
-        return result;
-    }
-
     pub fn classify(&self, input : [f32; DIM]) -> bool {
-        self.mul(input) >= self.threshold
+        dot(self.weights, input) >= self.threshold
     }
 
-    pub fn learn(&mut self, 
+    pub fn learn(
+        &mut self, 
         input : [f32; DIM], 
         learn_speed : f32, 
-        valid_result : bool
+        valid_classification : bool
     ) -> bool {
         assert!(0.0 < learn_speed && learn_speed < 1.0);
 
         let calculated_result = self.classify(input);
-        let result_is_valid = valid_result == calculated_result;
+        let result_is_valid = valid_classification == calculated_result;
         let result_sign = if result_is_valid { 1.0 } else { -1.0 };
 
         for d in 0..DIM {
