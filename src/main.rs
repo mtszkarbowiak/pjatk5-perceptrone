@@ -99,15 +99,4 @@ fn main() {
         current_learn_speed *= LEARN_SPEED_MUL;
         previous_accuracy = accuracy;
     }
-
-    // return;
-
-    println!("--- Final classification ---");
-    for record in records.iter() {
-        let expected = record.result == SEARCHED_IRIS;
-        let classified = perceptrone.classify(record.values);
-        let valid = expected == classified;
-
-        println!("Exp={} Clc={} IsValid={}", expected, classified, valid)
-    }
 }
