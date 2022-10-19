@@ -14,6 +14,10 @@ fn dot<const DIM : usize>(l : [f32; DIM], r : [f32; DIM]) -> f32 {
     return result;
 }
 
+fn activate(b : bool) -> f32 {
+    if b { 1.0 } else { 0.0 }
+}
+
 impl<const DIM : usize> Perceptrone<DIM> {
     pub fn new<const DIM2 : usize>(random_weights_scale : Option<f32>) -> Perceptrone<DIM> {
         let mut weights = [0.0; DIM];
@@ -38,19 +42,18 @@ impl<const DIM : usize> Perceptrone<DIM> {
         &mut self, 
         input : [f32; DIM], 
         learn_speed : f32, 
-        valid_classification : bool
+        expected_classification : bool
     ) -> bool {
         assert!(0.0 < learn_speed && learn_speed < 1.0);
 
-        let calculated_result = self.classify(input);
-        let result_is_valid = valid_classification == calculated_result;
-        let result_sign = if result_is_valid { 1.0 } else { -1.0 };
+        let current_classification = self.classify(input);
+        let delta = activate(expected_classification) - activate(current_classification);
 
         for d in 0..DIM {
-            self.weights[d] += result_sign * learn_speed * input[d];
+            self.weights[d] += delta * learn_speed * input[d];
         }
-        self.threshold += result_sign * learn_speed * (-1.0);
-        return result_is_valid;
+        self.threshold += delta * learn_speed * (-1.0);
+        return expected_classification == current_classification;
     }
 
     pub fn print(&self) {

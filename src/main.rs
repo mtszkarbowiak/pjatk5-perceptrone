@@ -19,8 +19,8 @@ struct Record {
 }
 
 
-const EPOCHS : usize = 10;
-const LEARN_SPEED_BASE : f32 = 0.025;
+const EPOCHS : usize = 20;
+const LEARN_SPEED_BASE : f32 = 0.003;
 const LEARN_SPEED_MUL : f32 = 1.0;
 const DATA_FILE_PATH : &str = "data/iris.data";
 const SEARCHED_IRIS : IrisType = IrisType::Virginica;
@@ -98,5 +98,16 @@ fn main() {
 
         current_learn_speed *= LEARN_SPEED_MUL;
         previous_accuracy = accuracy;
+    }
+
+    // return;
+
+    println!("--- Final classification ---");
+    for record in records.iter() {
+        let expected = record.result == SEARCHED_IRIS;
+        let classified = perceptrone.classify(record.values);
+        let valid = expected == classified;
+
+        println!("Exp={} Clc={} IsValid={}", expected, classified, valid)
     }
 }
